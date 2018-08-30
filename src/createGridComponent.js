@@ -65,6 +65,7 @@ export type Props = {|
   style?: Object,
   useIsScrolling: boolean,
   width: number,
+  renderFooter: () => React$Node,
 |};
 
 type State = {|
@@ -278,6 +279,7 @@ export default function createGridComponent({
         style,
         useIsScrolling,
         width,
+        renderFooter,
       } = this.props;
       const { isScrolling } = this.state;
 
@@ -339,17 +341,24 @@ export default function createGridComponent({
             willChange: 'transform',
             ...style,
           },
-        },
-        createElement(((innerTagName: any): string), {
-          children: items,
-          ref: innerRef,
-          style: {
-            height: estimatedTotalHeight,
-            overflow: 'hidden',
-            pointerEvents: isScrolling ? 'none' : '',
-            width: estimatedTotalWidth,
-          },
-        })
+        }, [
+          createElement(((innerTagName: any): string), {
+            key: 'items',
+            children: items,
+            ref: innerRef,
+            style: {
+              height: estimatedTotalHeight,
+              overflow: 'hidden',
+              pointerEvents: isScrolling ? 'none' : '',
+              width: estimatedTotalWidth,
+            },
+          }),
+          renderFooter ? (
+            createElement('div', { key: 'footer' }, renderFooter())
+          ) : (
+            null
+          ),
+        ]
       );
     }
 

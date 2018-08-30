@@ -54,6 +54,7 @@ export type Props = {|
   style?: Object,
   useIsScrolling: boolean,
   width: number | string,
+  renderFooter: () => React$Node,
 |};
 
 type State = {|
@@ -229,6 +230,7 @@ export default function createListComponent({
         style,
         useIsScrolling,
         width,
+        renderFooter,
       } = this.props;
       const { isScrolling } = this.state;
 
@@ -276,17 +278,23 @@ export default function createListComponent({
             willChange: 'transform',
             ...style,
           },
-        },
-        createElement(((innerTagName: any): string), {
-          children: items,
-          ref: innerRef,
-          style: {
-            height: direction === 'horizontal' ? '100%' : estimatedTotalSize,
-            overflow: 'hidden',
-            pointerEvents: isScrolling ? 'none' : '',
-            width: direction === 'horizontal' ? estimatedTotalSize : '100%',
-          },
-        })
+        }, [
+          createElement(((innerTagName: any): string), {
+            children: items,
+            ref: innerRef,
+            style: {
+              height: direction === 'horizontal' ? '100%' : estimatedTotalSize,
+              overflow: 'hidden',
+              pointerEvents: isScrolling ? 'none' : '',
+              width: direction === 'horizontal' ? estimatedTotalSize : '100%',
+            },
+          }),
+          renderFooter ? (
+            createElement('div', { key: 'footer' }, renderFooter())
+          ) : (
+            null
+          ),
+        ]
       );
     }
 
